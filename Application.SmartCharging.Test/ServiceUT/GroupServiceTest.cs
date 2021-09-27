@@ -2,6 +2,7 @@ using Application.SmartCharging.BL;
 using Application.SmartCharging.Common;
 using Application.SmartCharging.DL;
 using Application.SmartCharging.EFCore.Models;
+using Application.SmartCharging.Models;
 using AutoMapper;
 using Microsoft.Extensions.Configuration;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
@@ -23,7 +24,7 @@ namespace Application.SmartCharging.Test
         private Mock<IMapper> mapper;
         private GroupService groupService;
         private Mock<IGroupRepository> groupRepository;
-       // Guid gId = Guid.NewGuid();
+       public Guid gIdGet = Guid.NewGuid();
 
 
         #region Data Preparation
@@ -33,7 +34,13 @@ namespace Application.SmartCharging.Test
       
         IEnumerable<Group> groupList = new List<Group> { new Group() { Id = Guid.NewGuid(), Capacity = 1000, Name = "Test1", Cstations = new List<Cstation>() { new Cstation() { StationId = Guid.NewGuid(), GroupId = Guid.NewGuid(), Name = "CStation1" } } } };
 
-        //Group gp = new Group() { Id = Guid.NewGuid(), Capacity = 1000, Name = "Test2", Cstations = new Cstation() { StationId = Guid.NewGuid(), GroupId = Guid.NewGuid(), Name = "CStation1" } };
+        Group group = new() { Id = Guid.NewGuid(), Capacity = 1000, Name = "Test2", Cstations = new List<Cstation>() { new Cstation() { StationId = Guid.NewGuid(), GroupId = Guid.NewGuid(), Name = "CStation1" } } };
+
+        GroupRequest gpRPost = new GroupRequest() { Capacity = 1000, Name = "Group2" };
+        GroupRequest gpRUpdate = new GroupRequest() { Capacity = 9000, Name = "Group3" };
+
+        Group gpPost = new Group() { Id = Guid.NewGuid(), Capacity = 1000, Name = "Group2" };
+        Group gpUpdate = new Group() { Id = Guid.NewGuid(), Capacity = 9000, Name = "Group3" };
 
         #endregion
 
@@ -49,17 +56,51 @@ namespace Application.SmartCharging.Test
 
             // mock calls to DB
             groupRepository.Setup(x => x.GetAllAsync()).Returns(Task.FromResult(groupList));
-           // groupRepository.Setup(x => x.GetGroupAsync(It.IsAny<string>())).Returns(Task.FromResult(groupList));
-            groupRepository.Setup(x => x.GetAllAsync()).Returns(Task.FromResult(groupList));
-            groupRepository.Setup(x => x.GetAllAsync()).Returns(Task.FromResult(groupList));
-            groupRepository.Setup(x => x.GetAllAsync()).Returns(Task.FromResult(groupList));
-
+            groupRepository.Setup(x => x.GetGroupAsync(It.IsAny<string>())).Returns(Task.FromResult(group));
+            groupRepository.Setup(x => x.PostAsync(gpPost)).Returns(Task.FromResult(gpPost));
+            groupRepository.Setup(x => x.UpdateAsync(gpUpdate)).Returns(Task.FromResult(gpUpdate));
         }
 
 
-            [TestMethod]
-        public void TestMethod1()
+        [TestMethod]
+        public void GetAllAsyncTest()
         {
+            // Act
+            var response = groupService.GetAllGroupAsync().Result;
+            // Assert
+            Assert.IsNotNull(response);
+        }
+
+        [TestMethod]
+        public void GetGroupAsyncTest()
+        {
+
+            // Act
+            var response = groupService.GetGroupAsync(gIdGet.ToString()).Result;
+            // Assert
+            Assert.IsNotNull(response);
+        }
+
+        [TestMethod]
+        public void PostAsyncTest()
+        {
+            // Act
+            var response = groupService.PostGroupAsync(gpRPost).Result;
+            // Assert
+            Assert.IsNotNull(response);
+            Assert.IsTrue(response.Name==gpPost.Name);
+            Assert.IsTrue(response.Capacity == gpPost.Capacity);
+        }
+
+        [TestMethod]
+        public void UpdateAsyncTest()
+        {
+            // Act
+            var response = groupService.UpdateGroupAsync(gpRUpdate).Result;
+            // Assert
+            Assert.IsNotNull(response);
+            Assert.IsTrue(response.Name == gpRUpdate.Name);
+            Assert.IsTrue(response.Capacity == gpRUpdate.Capacity);
         }
     }
 }

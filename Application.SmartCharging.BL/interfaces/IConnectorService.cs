@@ -10,9 +10,9 @@ namespace Application.SmartCharging.BL
    public interface IConnectorService
     {
         public Task<IEnumerable<ConnectorResponse>> GetAllConnectorAsync();
-        public Task<ConnectorResponse> GetConnectorAsync(string id);
+        public Task<ConnectorResponse> GetConnectorAsync(string connectorId, string stationId);
         public Task<ConnectorResponse> PostConnectorAsync(ConnectorRequest item, string stationId);
         public Task<ConnectorResponse> UpdateConnectorAsync(ConnectorRequest item, string StationId);
-        public Task<ConnectorResponse> DeleteConnectorAsync(string item);
+        public Task<ConnectorResponse> DeleteConnectorAsync(string connectorId, string stationId);
     }
 }

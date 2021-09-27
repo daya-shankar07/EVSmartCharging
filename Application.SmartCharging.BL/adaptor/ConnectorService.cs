@@ -25,10 +25,10 @@ namespace Application.SmartCharging.BL
             _connectorRepository = connectorRepository;
 
         }
-        public async Task<ConnectorResponse> DeleteConnectorAsync(string id)
+        public async Task<ConnectorResponse> DeleteConnectorAsync(string connectorId, string stationId)
         {
 
-            var result = await _connectorRepository.DeleteAsync(id);
+            var result = await _connectorRepository.DeleteAsync(connectorId,stationId);
             var response = _mapper.Map<ConnectorResponse>(result);
             return response;
          
@@ -41,9 +41,9 @@ namespace Application.SmartCharging.BL
             return response;
         }
 
-        public async Task<ConnectorResponse> GetConnectorAsync(string id)
+        public async Task<ConnectorResponse> GetConnectorAsync(string connectorId, string stationId)
         {
-            var result = await _connectorRepository.GetConnectorAsync(id);
+            var result = await _connectorRepository.GetConnectorAsync(connectorId,stationId);
             var response = _mapper.Map<ConnectorResponse>(result);
             return response;
         }

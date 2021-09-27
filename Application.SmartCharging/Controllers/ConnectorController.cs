@@ -44,9 +44,9 @@ namespace Application.SmartCharging.Service.Controllers
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound, Type = typeof(string))]
         [ProducesResponseType(StatusCodes.Status400BadRequest, Type = typeof(string))]
-        public async Task<ConnectorResponse> GetConnector(string id)
+        public async Task<ConnectorResponse> GetConnector(string id, string stationId)
         {
-            var result = await _connectorService.GetConnectorAsync(id);
+            var result = await _connectorService.GetConnectorAsync(id,stationId);
             return result;
         }
 
@@ -57,9 +57,9 @@ namespace Application.SmartCharging.Service.Controllers
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound, Type = typeof(string))]
         [ProducesResponseType(StatusCodes.Status400BadRequest, Type = typeof(string))]
-        public async Task<ConnectorResponse> DeleteConnector(string id)
+        public async Task<ConnectorResponse> DeleteConnector(string id, string stationId)
         {
-            var result = await _connectorService.DeleteConnectorAsync(id);
+            var result = await _connectorService.DeleteConnectorAsync(id,stationId);
             return result;
         }
 

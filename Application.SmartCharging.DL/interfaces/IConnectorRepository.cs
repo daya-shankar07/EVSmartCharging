@@ -1,19 +1,15 @@
 ﻿using Application.SmartCharging.EFCore.Models;
-using Application.SmartCharging.Models;
-using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 
 namespace Application.SmartCharging.DL
 {
-   public interface IConnectorRepository
+    public interface IConnectorRepository
     {
-        public Task<IEnumerable<ConnectorResponse>> GetAllAsync();
-        public Task<ConnectorResponse> GetConnectorAsync(string id);
-        public Task<ConnectorResponse> PostAsync(Connector item, string stationId);
-        public Task<ConnectorResponse> UpdateAsync(Connector item, string stationId);
-        public Task<ConnectorResponse> DeleteAsync(string connectorId);
+        public Task<IEnumerable<Connector>> GetAllAsync();
+        public Task<Connector> GetConnectorAsync(string connectorId, string stationId);
+        public Task<Connector> PostAsync(Connector item, string stationId);
+        public Task<Connector> UpdateAsync(Connector item, string stationId);
+        public Task<Connector> DeleteAsync(string connectorId, string StationId);
     }
 }

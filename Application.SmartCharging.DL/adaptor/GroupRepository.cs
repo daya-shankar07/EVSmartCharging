@@ -22,15 +22,11 @@ namespace Application.SmartCharging.DL
             Group gp = new Group();
             try
             {
+                await
                 using (var context = new evsolutionContext())
                 {
-                    using (var transaction = context.Database.BeginTransaction())
-                    {
                         context.Remove(context.Groups.Single(x => x.Id.ToString() == id));
                         context.SaveChanges();
-
-                        transaction.Commit();
-                    }
                 }
             }
             catch (Exception ex)
@@ -46,13 +42,10 @@ namespace Application.SmartCharging.DL
             List<Group> groups = new List<Group>();
             try
             {
+                await
                 using(var context =  new evsolutionContext())
                 {
-                    using (var transaction = context.Database.BeginTransaction())
-                    {
-                        groups = context.Groups.Include(x => x.Cstations).ToList();
-                        transaction.Commit();
-                    }
+                   groups = context.Groups.Include(x => x.Cstations).ToList();
                 }
             }
             catch (Exception ex)
@@ -68,15 +61,11 @@ namespace Application.SmartCharging.DL
             Group group = new Group();
             try
             {
+                await
                 using (var context = new evsolutionContext())
                 {
-                    using (var transaction = context.Database.BeginTransaction())
-                    {
-                        group = context.Groups.Include(x => x.Cstations).FirstOrDefault();
-
-                        transaction.Commit();
-                    }
-
+                        group = context.Groups.Where(x=>x.Id.Equals(id)).Include(x => x.Cstations).FirstOrDefault();
+                      
                 }
             }
             catch (Exception ex)
@@ -95,6 +84,7 @@ namespace Application.SmartCharging.DL
             item.Id = gId;
             try
             {
+                await
                 using (var context = new evsolutionContext())
                 {
                     using (var transaction = context.Database.BeginTransaction())
@@ -102,7 +92,6 @@ namespace Application.SmartCharging.DL
                         context.Groups.Add(item);
                         context.SaveChanges();
                         gp = await GetGroupAsync(gId.ToString());
-
                         transaction.Commit();
                     }
                        
@@ -122,6 +111,7 @@ namespace Application.SmartCharging.DL
             Group gp = new Group();
             try
             {
+                await
                 using (var context = new evsolutionContext())
                 {
                     using (var transaction = context.Database.BeginTransaction())
@@ -133,11 +123,10 @@ namespace Application.SmartCharging.DL
                         context.Update(res);
                         context.SaveChanges();
                         gp = await GetGroupAsync(res.Id.ToString());
-
                         transaction.Commit();
 
                     }
-                        
+
                 }
 
             }

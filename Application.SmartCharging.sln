@@ -15,12 +15,20 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Application.SmartCharging.T
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Application.SmartCharging.Common", "Application.SmartCharging.Common\Application.SmartCharging.Common.csproj", "{071EF5F4-4C20-45C2-B380-F6DA6194EFE7}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Application.SmartCharging.EFCore", "Application.SmartCharging.EFCore\Application.SmartCharging.EFCore.csproj", "{7A3D523D-B0BA-4898-95A5-B6FC79DA9E03}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Application.SmartCharging.EFCore", "Application.SmartCharging.EFCore\Application.SmartCharging.EFCore.csproj", "{7A3D523D-B0BA-4898-95A5-B6FC79DA9E03}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{028E40A1-3F07-45F0-A2FF-99C4E36862EE}"
 	ProjectSection(SolutionItems) = preProject
 		README.md = README.md
 	EndProjectSection
+EndProject
+Project("{00D1A9C2-B5F0-4AF3-8072-F6C62B433612}") = "Application.SmartCharging.DB", "Application.SmartCharging.DB\Application.SmartCharging.DB.sqlproj", "{64AF02E3-84B8-484A-997E-76D8728C0215}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{B6944136-9FB1-481B-ADA2-EFCFE3CABB30}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "test", "test", "{FF5552F0-0B16-4F32-B4A2-EDCC8824BE49}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "database", "database", "{336FE933-058D-4339-BAA2-D1C5AA1410E8}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -56,9 +64,25 @@ Global
 		{7A3D523D-B0BA-4898-95A5-B6FC79DA9E03}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{7A3D523D-B0BA-4898-95A5-B6FC79DA9E03}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{7A3D523D-B0BA-4898-95A5-B6FC79DA9E03}.Release|Any CPU.Build.0 = Release|Any CPU
+		{64AF02E3-84B8-484A-997E-76D8728C0215}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{64AF02E3-84B8-484A-997E-76D8728C0215}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{64AF02E3-84B8-484A-997E-76D8728C0215}.Debug|Any CPU.Deploy.0 = Debug|Any CPU
+		{64AF02E3-84B8-484A-997E-76D8728C0215}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{64AF02E3-84B8-484A-997E-76D8728C0215}.Release|Any CPU.Build.0 = Release|Any CPU
+		{64AF02E3-84B8-484A-997E-76D8728C0215}.Release|Any CPU.Deploy.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{5D1C6174-9F26-46FB-87B1-C21CA76F6A22} = {B6944136-9FB1-481B-ADA2-EFCFE3CABB30}
+		{1808B818-ECC8-46EE-B67C-C48578E0E9F5} = {B6944136-9FB1-481B-ADA2-EFCFE3CABB30}
+		{998F9BAD-37D4-4220-BEE9-F319B5DA32AF} = {B6944136-9FB1-481B-ADA2-EFCFE3CABB30}
+		{89C960AA-4882-4C10-A8C8-A4DD377008EB} = {B6944136-9FB1-481B-ADA2-EFCFE3CABB30}
+		{04F208E6-14DF-4AAA-8455-5BEC8D671F29} = {FF5552F0-0B16-4F32-B4A2-EDCC8824BE49}
+		{071EF5F4-4C20-45C2-B380-F6DA6194EFE7} = {B6944136-9FB1-481B-ADA2-EFCFE3CABB30}
+		{7A3D523D-B0BA-4898-95A5-B6FC79DA9E03} = {B6944136-9FB1-481B-ADA2-EFCFE3CABB30}
+		{64AF02E3-84B8-484A-997E-76D8728C0215} = {336FE933-058D-4339-BAA2-D1C5AA1410E8}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {B6E3AE7D-AE72-4056-B6EE-A043BB83B54E}

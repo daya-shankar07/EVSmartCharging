@@ -23,6 +23,7 @@ namespace Application.SmartCharging.EFCore.Models
         {
             if (!optionsBuilder.IsConfigured)
             {
+                // TODO- keyvault integration and fetch from keyvault 
                 optionsBuilder.UseSqlServer("Server=tcp:smartcharging.database.windows.net,1433;Initial Catalog=evsolution;Persist Security Info=False;User ID=centraluser;Password=Welcome@123;MultipleActiveResultSets=False;Encrypt=True;TrustServerCertificate=False;Connection Timeout=30;");
             }
         }
@@ -44,7 +45,7 @@ namespace Application.SmartCharging.EFCore.Models
                 entity.HasOne(d => d.Cstation)
                     .WithMany(p => p.Connectors)
                     .HasForeignKey(d => d.CstationId)
-                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .OnDelete(DeleteBehavior.Cascade)
                     .HasConstraintName("FK_CStation_Id");
             });
 
@@ -61,7 +62,7 @@ namespace Application.SmartCharging.EFCore.Models
                 entity.HasOne(d => d.Group)
                     .WithMany(p => p.Cstations)
                     .HasForeignKey(d => d.GroupId)
-                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .OnDelete(DeleteBehavior.Cascade)
                     .HasConstraintName("FK_Group_Id");
             });
 

@@ -3,16 +3,16 @@
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <Name>Application.SmartCharging.Database</Name>
+    <Name>Application.SmartCharging.DB</Name>
     <SchemaVersion>2.0</SchemaVersion>
     <ProjectVersion>4.1</ProjectVersion>
-    <ProjectGuid>{079c590d-8977-4b18-9b37-4d66af91ea9a}</ProjectGuid>
+    <ProjectGuid>{64af02e3-84b8-484a-997e-76d8728c0215}</ProjectGuid>
     <DSP>Microsoft.Data.Tools.Schema.Sql.Sql130DatabaseSchemaProvider</DSP>
     <OutputType>Database</OutputType>
     <RootPath>
     </RootPath>
-    <RootNamespace>Application.SmartCharging.Database</RootNamespace>
-    <AssemblyName>Application.SmartCharging.Database</AssemblyName>
+    <RootNamespace>Application.SmartCharging.DB</RootNamespace>
+    <AssemblyName>Application.SmartCharging.DB</AssemblyName>
     <ModelCollation>1033,CI</ModelCollation>
     <DefaultFileStructure>BySchemaAndSchemaType</DefaultFileStructure>
     <DeployToDatabase>True</DeployToDatabase>

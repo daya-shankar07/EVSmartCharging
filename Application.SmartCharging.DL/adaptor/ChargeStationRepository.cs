@@ -19,7 +19,22 @@ namespace Application.SmartCharging.DL
         }
         public async Task<Cstation> DeleteAsync(string id)
         {
-            throw new NotImplementedException();
+            Cstation cs = new Cstation();
+            try
+            {
+                await
+                using (var context = new evsolutionContext())
+                {
+                    context.Remove(context.Cstations.Single(x => x.StationId.ToString() == id));
+                    context.SaveChanges();
+                }
+            }
+            catch (Exception ex)
+            {
+                _telemetry.TrackException(ex);
+                throw;
+            }
+            return cs;
         }
 
         public async Task<IEnumerable<Cstation>> GetAllAsync()
@@ -27,6 +42,7 @@ namespace Application.SmartCharging.DL
             List<Cstation> cStations = new List<Cstation>();
             try
             {
+                await
                 using (var context = new evsolutionContext())
                 {
                     
@@ -34,9 +50,9 @@ namespace Application.SmartCharging.DL
                        
                 }
             }
-            catch (Exception)
+            catch (Exception ex)
             {
-
+                _telemetry.TrackException(ex);
                 throw;
             }
             return cStations;
@@ -44,21 +60,22 @@ namespace Application.SmartCharging.DL
 
         public async Task<Cstation> GetStationAsync(string id)
         {
-            Cstation cStation = new Cstation();
+            Cstation station = new Cstation();
             try
             {
+                await
                 using (var context = new evsolutionContext())
                 {
-                   // cStation = context.Groups.Include(x => x.Cstations).FirstOrDefault();
+                    station = context.Cstations.Where(x => x.StationId.Equals(id)).Include(x => x.Connectors).FirstOrDefault();
 
                 }
             }
-            catch (Exception)
+            catch (Exception ex)
             {
-
+                _telemetry.TrackException(ex);
                 throw;
             }
-            return cStation;
+            return station;
         }
 
         public async Task<Cstation> PostAsync(Cstation item, string groupId)
@@ -69,17 +86,22 @@ namespace Application.SmartCharging.DL
             item.StationId = sId;
             try
             {
+                await
                 using (var context = new evsolutionContext())
                 {
-                    context.Cstations.Add(item);
-                    context.SaveChanges();
-                    cs = await GetStationAsync(sId.ToString());
+                    using (var transaction = context.Database.BeginTransaction())
+                    {
+                        context.Cstations.Add(item);
+                        context.SaveChanges();
+                        cs = await GetStationAsync(sId.ToString());
+                        transaction.Commit();
+                    }
                 }
 
             }
-            catch (Exception)
+            catch (Exception ex)
             {
-
+                _telemetry.TrackException(ex);
                 throw;
             }
             return cs;
@@ -90,19 +112,26 @@ namespace Application.SmartCharging.DL
             Cstation cs = new Cstation();
             try
             {
+                await
                 using (var context = new evsolutionContext())
                 {
-                    var res = context.Cstations.ToString(); //.First<Cstation>();
-                  //  res.Name = item.Name;
+                    using (var transaction = context.Database.BeginTransaction())
+                    {
+                        var res = context.Cstations.First<Cstation>();
+                        res.Name = item.Name;
+                        res.Connectors = item.Connectors;
 
-                    context.SaveChanges();
-                    cs = await GetStationAsync(""); //GetStationAsync(res.Id.ToString());
+                        context.Update(res);
+                        context.SaveChanges();
+                        cs = await GetStationAsync(res.StationId.ToString());
+                        transaction.Commit();
+                    }
                 }
 
             }
-            catch (Exception)
+            catch (Exception ex)
             {
-
+                _telemetry.TrackException(ex);
                 throw;
             }
 
