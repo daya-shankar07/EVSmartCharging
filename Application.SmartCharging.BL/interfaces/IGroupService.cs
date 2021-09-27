@@ -12,7 +12,7 @@ namespace Application.SmartCharging.BL
         public Task<IEnumerable<GroupResponse>> GetAllGroupAsync();
         public Task<GroupResponse> GetGroupAsync(string id);
         public Task<GroupResponse> PostGroupAsync(GroupRequest item);
-        public Task<GroupResponse> UpdateGroupAsync(GroupRequest item);
+        public Task<GroupResponse> UpdateGroupAsync(GroupRequest item, string groupId);
         public Task<GroupResponse> DeleteGroupAsync(string id);
     }
 }

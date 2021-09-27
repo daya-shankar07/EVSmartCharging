@@ -1,50 +1,41 @@
 ﻿using Application.SmartCharging.Common;
+using Application.SmartCharging.DL;
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 
 namespace Application.SmartCharging.BL.Validations
 {
     public class CommonValidations 
     {
-        private readonly IGroupService _groupService ;
-        private readonly IChargeStationService _chargeStationService;
-        private readonly ITelemetryAdaptor telemetryAdaptor ;
+        private readonly IGroupRepository _groupService ;
+        private readonly ITelemetryAdaptor _telemetryAdaptor ;
 
-        public CommonValidations(IGroupService groupService, IChargeStationService chargeStationService)
+        public CommonValidations(IGroupRepository groupRepository, ITelemetryAdaptor telemetryAdaptor)
         {
-            _groupService = groupService;
-            _chargeStationService = chargeStationService;
+            _groupService = groupRepository;
+            _telemetryAdaptor = telemetryAdaptor;
         }
 
         public async Task<double> ValidateGroupMaxCurrentLimit(string groupId)
         {
-          //  bool isValid = false;
+            _telemetryAdaptor.TrackEvent(String.Format("ValidateGroupMaxCurrentLimit Started for GroupId {0}", groupId));
             double connectorMaxCurrentSum = 0;
             try
             {
                 if (string.IsNullOrEmpty(groupId)) return connectorMaxCurrentSum;
 
-                var groupData = await _groupService.GetGroupAsync(groupId);
-                
-                if(groupData != null)
+                var groupData = await _groupService.GetGroupDataWithConnectorAsync(groupId);
+                foreach (var conn in groupData.Connectors)
                 {
-                    var cStationIdList = groupData.ChargingStation.Select(x => x.StationId).ToList();
-
-                    foreach (var id in cStationIdList)
-                    {
-                        var cResponse = await _chargeStationService.GetStationAsync(id);
-                         connectorMaxCurrentSum = connectorMaxCurrentSum + cResponse.Connectors.Select(y => y.MaxCurrent).Sum();
-                    }
+                    connectorMaxCurrentSum = (double)(connectorMaxCurrentSum + conn.MaxCurrent);
                 }
-
             }
-            catch (Exception)
+            catch (Exception ex)
             {
+                _telemetryAdaptor.TrackException(ex);
                 throw;
             }
+            _telemetryAdaptor.TrackEvent(String.Format("ValidateGroupMaxCurrentLimit Completed for GroupId {0}", groupId));
             return connectorMaxCurrentSum;
 
         }

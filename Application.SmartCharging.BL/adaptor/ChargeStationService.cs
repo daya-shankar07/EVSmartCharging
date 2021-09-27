@@ -29,39 +29,93 @@ namespace Application.SmartCharging.BL
         }
         public async Task<CstationResponse> DeleteAsync(string stationId)
         {
-            var result = await _cStationRepository.DeleteAsync(stationId);
-            var response = _mapper.Map<CstationResponse>(result);
+            CstationResponse response = new();
+            _telemetryAdaptor.TrackEvent(String.Format("DeleteAsync Started for stationId {0}", stationId));
+            try
+            {
+                var result = await _cStationRepository.DeleteAsync(stationId);
+                 response = _mapper.Map<CstationResponse>(result);
+            }
+            catch (Exception ex)
+            {
+                _telemetryAdaptor.TrackException(ex);
+            }
+            _telemetryAdaptor.TrackEvent(String.Format("DeleteAsync Completed for stationId {0}", stationId));
             return response;
         }
 
         public async Task<IEnumerable<CstationResponse>> GetAllAsync()
         {
-            var result = await _cStationRepository.GetAllAsync();
-            var response = _mapper.Map<IEnumerable<CstationResponse>>(result);
+            List<CstationResponse> response = new List<CstationResponse>();
+            _telemetryAdaptor.TrackEvent(String.Format("GetAllAsync Started"));
+            try
+            {
+                var result = await _cStationRepository.GetAllAsync();
+                response = _mapper.Map<IEnumerable<CstationResponse>>(result).ToList();
+            }
+            catch (Exception ex)
+            {
+                _telemetryAdaptor.TrackException(ex);
+            }
+            _telemetryAdaptor.TrackEvent(String.Format("GetAllAsync Completed"));
             return response;
         }
 
         public async Task<CstationResponse> GetStationAsync(string id)
         {
-            var result = await _cStationRepository.GetStationAsync(id);
-            var response = _mapper.Map<CstationResponse>(result);
+            _telemetryAdaptor.TrackEvent(String.Format("GetStationAsync Started for Station {0}", id));
+            CstationResponse response = new();
+            try
+            {
+                var result = await _cStationRepository.GetStationAsync(id);
+                response = _mapper.Map<CstationResponse>(result);
+            }
+            catch (Exception ex)
+            {
+                _telemetryAdaptor.TrackException(ex);
+            }
+            _telemetryAdaptor.TrackEvent(String.Format("GetStationAsync Completed for Station {0}", id));
             return response;
         }
 
         public async Task<CstationResponse> PostAsync(CStationRequest item, string groupId)
         {
-
-            var itemToPost = _mapper.Map<Cstation>(item);
-            var result = await _cStationRepository.PostAsync(itemToPost, groupId);
-            var response = _mapper.Map<CstationResponse>(result);
+            _telemetryAdaptor.TrackEvent(String.Format("PostAsync Started"));
+            CstationResponse response = new();
+            try
+            {
+                if (groupId == null) return response;
+                var itemToPost = _mapper.Map<Cstation>(item);
+                itemToPost.GroupId = Guid.Parse(groupId);
+                itemToPost.StationId = Guid.NewGuid();
+                var result = await _cStationRepository.PostAsync(itemToPost);
+                response = _mapper.Map<CstationResponse>(result);
+            }
+            catch (Exception ex)
+            {
+                _telemetryAdaptor.TrackException(ex);
+            }
+            _telemetryAdaptor.TrackEvent(String.Format("PostAsync Completed"));
             return response;
         }
 
         public async Task<CstationResponse> UpdateAsync(CStationRequest item, string groupId)
         {
-            var itemToUpdate = _mapper.Map<Cstation>(item);
-            var result = await _cStationRepository.UpdateAsync(itemToUpdate, groupId);
-            var response = _mapper.Map<CstationResponse>(result);
+            CstationResponse response = new();
+            _telemetryAdaptor.TrackEvent(String.Format("UpdateAsync Started for group {0} " , groupId));
+            try
+            {
+                if (groupId == null) return response;
+                var itemToUpdate = _mapper.Map<Cstation>(item);
+                itemToUpdate.GroupId = Guid.Parse(groupId);
+                var result = await _cStationRepository.UpdateAsync(itemToUpdate);
+                 response = _mapper.Map<CstationResponse>(result);
+            }
+            catch (Exception ex)
+            {
+                _telemetryAdaptor.TrackException(ex);
+            }
+            _telemetryAdaptor.TrackEvent(String.Format("UpdateAsync Completed for group {0} ", groupId));
             return response;
 
         }

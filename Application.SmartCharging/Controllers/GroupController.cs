@@ -75,15 +75,15 @@ namespace Application.SmartCharging.Controllers
         }
 
       
-        [HttpPut("/group/{id}")]
+        [HttpPut("/group/{groupId}")]
         [ActionName("/updateGroup")]
         [Produces("application/json", Type = typeof(GroupResponse))]
         [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(GroupResponse))]
         [ProducesResponseType(StatusCodes.Status404NotFound, Type = typeof(string))]
         [ProducesResponseType(StatusCodes.Status400BadRequest, Type = typeof(string))]
-        public async Task<GroupResponse> UpdateGroup([FromBody]GroupRequest item)
+        public async Task<GroupResponse> UpdateGroup([FromBody]GroupRequest item, string groupId)
         {
-            var result = await _groupService.UpdateGroupAsync(item);
+            var result = await _groupService.UpdateGroupAsync(item, groupId);
             return result;
         }
 

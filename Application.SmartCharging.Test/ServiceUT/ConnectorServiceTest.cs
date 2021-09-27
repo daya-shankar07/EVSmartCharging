@@ -60,8 +60,8 @@ namespace Application.SmartCharging.Test
             // mock calls to DB
             connectorRepository.Setup(x => x.GetAllAsync()).Returns(Task.FromResult(connectorList));
             connectorRepository.Setup(x => x.GetConnectorAsync(It.IsAny<string>(), It.IsAny<string>())).Returns(Task.FromResult(connector));
-            connectorRepository.Setup(x => x.PostAsync(It.IsAny<Connector>(), It.IsAny<string>())).Returns(Task.FromResult(connResponsePost));
-            connectorRepository.Setup(x => x.UpdateAsync(It.IsAny<Connector>(), It.IsAny<string>())).Returns(Task.FromResult(connectorResponseUpdate));
+            connectorRepository.Setup(x => x.PostAsync(It.IsAny<Connector>())).Returns(Task.FromResult(connResponsePost));
+            connectorRepository.Setup(x => x.UpdateAsync(It.IsAny<Connector>())).Returns(Task.FromResult(connectorResponseUpdate));
         }
 
 

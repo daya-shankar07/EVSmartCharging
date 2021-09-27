@@ -28,42 +28,96 @@ namespace Application.SmartCharging.BL
         }
         public async Task<ConnectorResponse> DeleteConnectorAsync(string connectorId, string stationId)
         {
+            ConnectorResponse response = new();
+            _telemetryAdaptor.TrackEvent(String.Format("DeleteConnectorAsync Started for StationId {0} ConnectorId {1} ", stationId, connectorId));
+            try
+            {
+                var result = await _connectorRepository.DeleteAsync(connectorId, stationId);
+                response = _mapper.Map<ConnectorResponse>(result);
+            }
+            catch (Exception ex)
+            {
+                _telemetryAdaptor.TrackException(ex);
+            }
+            _telemetryAdaptor.TrackEvent(String.Format("DeleteConnectorAsync Completed for StationId {0} ConnectorId {1} ", stationId, connectorId));
 
-            var result = await _connectorRepository.DeleteAsync(connectorId,stationId);
-            var response = _mapper.Map<ConnectorResponse>(result);
             return response;
-         
+
         }
 
         public async Task<IEnumerable<ConnectorResponse>> GetAllConnectorAsync()
         {
-            var result = await _connectorRepository.GetAllAsync();
-            var response = _mapper.Map<IEnumerable<ConnectorResponse>>(result);
+            List<ConnectorResponse> response = new();
+            _telemetryAdaptor.TrackEvent(String.Format("GetAllConnectorAsync Started"));
+            try
+            {
+                var result = await _connectorRepository.GetAllAsync();
+                response = _mapper.Map<IEnumerable<ConnectorResponse>>(result).ToList();
+            }
+            catch (Exception ex)
+            {
+                _telemetryAdaptor.TrackException(ex);
+            }
+            _telemetryAdaptor.TrackEvent(String.Format("GetAllConnectorAsync Completed"));
             return response;
         }
 
         public async Task<ConnectorResponse> GetConnectorAsync(string connectorId, string stationId)
         {
-            var result = await _connectorRepository.GetConnectorAsync(connectorId,stationId);
-            var response = _mapper.Map<ConnectorResponse>(result);
+            _telemetryAdaptor.TrackEvent(String.Format("GetConnectorAsync Started"));
+            ConnectorResponse response = new();
+            try
+            {
+                var result = await _connectorRepository.GetConnectorAsync(connectorId, stationId);
+                response = _mapper.Map<ConnectorResponse>(result);
+            }
+            catch (Exception ex)
+            {
+
+                _telemetryAdaptor.TrackException(ex);
+            }
+            _telemetryAdaptor.TrackEvent(String.Format("GetConnectorAsync Completed"));
             return response;
         }
 
         public async Task<ConnectorResponse> PostConnectorAsync(ConnectorRequest item, string stationId)
         {
-
-            var itemToPost = _mapper.Map<Connector>(item);
-            var result = await _connectorRepository.PostAsync(itemToPost, stationId);
-            var response = _mapper.Map<ConnectorResponse>(result);
+            ConnectorResponse response = new();
+            _telemetryAdaptor.TrackEvent(String.Format("PostConnectorAsync Started"));
+            try
+            {
+                var itemToPost = _mapper.Map<Connector>(item);
+                itemToPost.CstationId = Guid.Parse(stationId);
+                var result = await _connectorRepository.PostAsync(itemToPost);
+                 response = _mapper.Map<ConnectorResponse>(result);
+            }
+            catch (Exception ex)
+            {
+                _telemetryAdaptor.TrackException(ex);
+            }
+            _telemetryAdaptor.TrackEvent(String.Format("PostConnectorAsync Completed"));
             return response;
 
         }
 
         public async Task<ConnectorResponse> UpdateConnectorAsync(ConnectorRequest item, string stationId)
         {
-            var itemToUpdate = _mapper.Map<Connector>(item);
-            var result = await _connectorRepository.UpdateAsync(itemToUpdate, stationId);
-            var response = _mapper.Map<ConnectorResponse>(result);
+            ConnectorResponse response = new();
+            _telemetryAdaptor.TrackEvent(String.Format("UpdateConnectorAsync Started"));
+            try
+            {
+                var itemToUpdate = _mapper.Map<Connector>(item);
+                itemToUpdate.CstationId = Guid.Parse(stationId);
+                var result = await _connectorRepository.UpdateAsync(itemToUpdate);
+                response = _mapper.Map<ConnectorResponse>(result);
+
+            }
+            catch (Exception ex)
+            {
+
+                throw;
+            }
+            _telemetryAdaptor.TrackEvent(String.Format("UpdateConnectorAsync Exited"));
             return response;
         }
     }

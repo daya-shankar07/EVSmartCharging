@@ -19,6 +19,7 @@ namespace Application.SmartCharging.DL
         }
         public async Task<Cstation> DeleteAsync(string id)
         {
+            // no need to write anything extra logic since DeleteBehavior is cascade of EF | DeleteBehavior.Cascade
             Cstation cs = new Cstation();
             try
             {
@@ -77,12 +78,9 @@ namespace Application.SmartCharging.DL
             return station;
         }
 
-        public async Task<Cstation> PostAsync(Cstation item, string groupId)
+        public async Task<Cstation> PostAsync(Cstation item)
         {
             Cstation cs = new Cstation();
-
-            var sId = Guid.NewGuid();
-            item.StationId = sId;
             try
             {
                 await
@@ -91,8 +89,8 @@ namespace Application.SmartCharging.DL
                     using (var transaction = context.Database.BeginTransaction())
                     {
                         context.Cstations.Add(item);
+                        cs = item;
                         context.SaveChanges();
-                        cs = await GetStationAsync(sId.ToString());
                         transaction.Commit();
                     }
                 }
@@ -106,7 +104,7 @@ namespace Application.SmartCharging.DL
             return cs;
         }
 
-        public async Task<Cstation> UpdateAsync(Cstation item, string groupId)
+        public async Task<Cstation> UpdateAsync(Cstation item)
         {
             Cstation cs = new Cstation();
             try
@@ -116,10 +114,14 @@ namespace Application.SmartCharging.DL
                 {
                     using (var transaction = context.Database.BeginTransaction())
                     {
-                        var res = context.Cstations.First<Cstation>();
-                        res.Name = item.Name;
-                        res.Connectors = item.Connectors;
-
+                        var res = context.Cstations.Where(x => x.StationId == item.StationId).FirstOrDefault();
+                        List<Connector> connectorsList = res.Connectors !=null ? res.Connectors.ToList() : new List<Connector>();
+                        if(item.Connectors.Count>0)
+                        {
+                            connectorsList.AddRange(item.Connectors);
+                        }
+                        res.Name = item.Name != null ? item.Name : res.Name;
+                        res.Connectors = connectorsList;
                         context.Update(res);
                         context.SaveChanges();
                         cs = await GetStationAsync(res.StationId.ToString());

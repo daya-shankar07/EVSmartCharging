@@ -8,8 +8,8 @@ namespace Application.SmartCharging.DL
     {
         public Task<IEnumerable<Connector>> GetAllAsync();
         public Task<Connector> GetConnectorAsync(string connectorId, string stationId);
-        public Task<Connector> PostAsync(Connector item, string stationId);
-        public Task<Connector> UpdateAsync(Connector item, string stationId);
+        public Task<Connector> PostAsync(Connector item);
+        public Task<Connector> UpdateAsync(Connector item);
         public Task<Connector> DeleteAsync(string connectorId, string StationId);
     }
 }

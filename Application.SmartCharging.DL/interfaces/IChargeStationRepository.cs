@@ -9,8 +9,8 @@ namespace Application.SmartCharging.DL
     {
         public Task<IEnumerable<Cstation>> GetAllAsync();
         public Task<Cstation> GetStationAsync(string id);
-        public Task<Cstation> PostAsync(Cstation item, string groupId);
-        public Task<Cstation> UpdateAsync(Cstation item, string groupId);
+        public Task<Cstation> PostAsync(Cstation item);
+        public Task<Cstation> UpdateAsync(Cstation item);
         public Task<Cstation> DeleteAsync(string id);
 
     }

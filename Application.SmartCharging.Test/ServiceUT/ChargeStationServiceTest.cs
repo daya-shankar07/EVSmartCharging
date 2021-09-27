@@ -59,8 +59,8 @@ namespace Application.SmartCharging.Test
             // mock calls to DB
             cStationRepository.Setup(x => x.GetAllAsync()).Returns(Task.FromResult(cStationList));
             cStationRepository.Setup(x => x.GetStationAsync(It.IsAny<string>())).Returns(Task.FromResult(cstation));
-            cStationRepository.Setup(x => x.PostAsync(It.IsAny<Cstation>(), It.IsAny<string>())).Returns(Task.FromResult(cStationResponsePost));
-            cStationRepository.Setup(x => x.UpdateAsync(It.IsAny<Cstation>(), It.IsAny<string>())).Returns(Task.FromResult(cStationResponseUpdate));
+            cStationRepository.Setup(x => x.PostAsync(It.IsAny<Cstation>())).Returns(Task.FromResult(cStationResponsePost));
+            cStationRepository.Setup(x => x.UpdateAsync(It.IsAny<Cstation>())).Returns(Task.FromResult(cStationResponseUpdate));
         }
 
 

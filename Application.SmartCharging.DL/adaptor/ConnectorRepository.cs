@@ -78,7 +78,7 @@ namespace Application.SmartCharging.DL
             return connector;
         }
 
-        public async Task<Connector> PostAsync(Connector item, string stationId)
+        public async Task<Connector> PostAsync(Connector item)
         {
             Connector cs = new Connector();
 
@@ -89,10 +89,9 @@ namespace Application.SmartCharging.DL
                 {
                     using (var transaction = context.Database.BeginTransaction())
                     {
-                        // todo- improve
-                        context.Connectors.Where(x=>x.CstationId.ToString()==stationId).FirstOrDefault();
+                        context.Connectors.Add(item);
+                        cs = item;
                         context.SaveChanges();
-                        cs = await GetConnectorAsync(item.Id.ToString(),stationId);
                         transaction.Commit();
                     }
                 }
@@ -106,7 +105,7 @@ namespace Application.SmartCharging.DL
             return cs;
         }
 
-        public async Task<Connector> UpdateAsync(Connector item, string stationId)
+        public async Task<Connector> UpdateAsync(Connector item)
         {
             Connector cs = new Connector();
             try
@@ -116,11 +115,15 @@ namespace Application.SmartCharging.DL
                 {
                     using (var transaction = context.Database.BeginTransaction())
                     {
-                        var res = context.Connectors.First<Connector>();
-                        res.MaxCurrent = item.MaxCurrent;
-                        context.Update(res);
-                        context.SaveChanges();
-                        cs = await GetConnectorAsync(item.Id.ToString(), stationId);
+                        var res = context.Connectors.Where(x => x.Id == item.Id && x.CstationId.Equals(item.CstationId)).FirstOrDefault();
+                        if(res != null)
+                        {
+                            res.MaxCurrent = item.MaxCurrent >0 ? item.MaxCurrent : res.MaxCurrent;
+                            context.Update(res);
+                            cs = res;
+                            context.SaveChanges();
+                        }
+                       
                         transaction.Commit();
                     }
                 }

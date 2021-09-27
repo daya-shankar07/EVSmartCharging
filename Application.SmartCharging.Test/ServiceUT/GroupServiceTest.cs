@@ -102,7 +102,7 @@ namespace Application.SmartCharging.Test
         public void UpdateAsyncTest()
         {
             // Act
-            var response = groupService.UpdateGroupAsync(gpRequestUpdate).Result;
+            var response = groupService.UpdateGroupAsync(gpRequestUpdate, gId.ToString()).Result;
             // Assert
             Assert.IsNotNull(response);
             Assert.IsTrue(response.Name == gpRequestUpdate.Name);
