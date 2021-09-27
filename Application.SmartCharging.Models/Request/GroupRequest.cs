@@ -12,5 +12,8 @@ namespace Application.SmartCharging.Models
 
         [Range(0.000001, double.MaxValue)]
         public double Capacity { get; set; }
+
+        [Range(0, int.MaxValue)]
+        public IEnumerable<CStationRequest> CStations { get; set; }
     }
 }

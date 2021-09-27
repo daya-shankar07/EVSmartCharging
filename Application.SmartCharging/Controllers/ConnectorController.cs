@@ -16,11 +16,9 @@ namespace Application.SmartCharging.Service.Controllers
     [ApiController]
     public class ConnectorController : ControllerBase
     {
-        private readonly ILogger _logger;
         private readonly IConnectorService _connectorService;
-        public ConnectorController(ILogger logger,IConnectorService connectoryService)
+        public ConnectorController(IConnectorService connectoryService)
         {
-            _logger = logger;
             _connectorService = connectoryService;
         }
 

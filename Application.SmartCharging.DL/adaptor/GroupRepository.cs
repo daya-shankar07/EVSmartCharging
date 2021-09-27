@@ -64,7 +64,7 @@ namespace Application.SmartCharging.DL
                 await
                 using (var context = new evsolutionContext())
                 {
-                        group = context.Groups.Where(x=>x.Id.Equals(id)).Include(x => x.Cstations).FirstOrDefault();
+                        group = context.Groups.Where(x=>x.Id.ToString().Equals(id)).Include(x => x.Cstations).FirstOrDefault();
                       
                 }
             }
@@ -78,10 +78,15 @@ namespace Application.SmartCharging.DL
 
         public async Task<Group> PostAsync(Group item)
         {
-            Group gp = new Group();
+            Group gpPost = new Group();
+            Group gpGet = new Group();
 
             var gId = Guid.NewGuid();
-            item.Id = gId;
+            gpPost.Id = gId;
+            gpPost.Name = item.Name;
+            gpPost.Cstations = item.Cstations;
+            gpPost.Capacity = item.Capacity;
+
             try
             {
                 await
@@ -89,9 +94,9 @@ namespace Application.SmartCharging.DL
                 {
                     using (var transaction = context.Database.BeginTransaction())
                     {
-                        context.Groups.Add(item);
+                        context.Groups.Add(gpPost);
                         context.SaveChanges();
-                        gp = await GetGroupAsync(gId.ToString());
+                        gpGet = await GetGroupAsync(gId.ToString());
                         transaction.Commit();
                     }
                        
@@ -103,7 +108,7 @@ namespace Application.SmartCharging.DL
                 _telemetry.TrackException(ex);
                 throw;
             }
-            return gp;
+            return gpGet;
         }
 
         public async Task<Group> UpdateAsync(Group item)

@@ -7,7 +7,7 @@ namespace Application.SmartCharging.Models
     public class GroupResponse :GroupRequest
     {
         public string Id { get; set; }
-        public List<CstationResponse> ChargingStation  { get; set; }
+        public IEnumerable<CstationResponse> CStations { get; set; }
 
     }
 }

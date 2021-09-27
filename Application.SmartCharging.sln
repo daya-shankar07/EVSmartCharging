@@ -17,7 +17,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Application.SmartCharging.C
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Application.SmartCharging.EFCore", "Application.SmartCharging.EFCore\Application.SmartCharging.EFCore.csproj", "{7A3D523D-B0BA-4898-95A5-B6FC79DA9E03}"
 EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{028E40A1-3F07-45F0-A2FF-99C4E36862EE}"
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "docs", "docs", "{028E40A1-3F07-45F0-A2FF-99C4E36862EE}"
 	ProjectSection(SolutionItems) = preProject
 		README.md = README.md
 	EndProjectSection

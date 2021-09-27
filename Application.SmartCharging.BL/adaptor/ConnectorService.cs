@@ -23,6 +23,7 @@ namespace Application.SmartCharging.BL
             _configuration = configuration;
             _telemetryAdaptor = telemetryAdaptor;
             _connectorRepository = connectorRepository;
+            _mapper = mapper;
 
         }
         public async Task<ConnectorResponse> DeleteConnectorAsync(string connectorId, string stationId)

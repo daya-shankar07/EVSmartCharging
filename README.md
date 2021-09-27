@@ -8,8 +8,11 @@
 * Database UserName & Password for SSMS access . (SQL Authentication Type) 
 	* UN- **centraluser**
 	* Pass- **Welcome@123**
+	* if database access doesn't work then Application.SmartCharging.DB project can be leveraged to generate database
+	* Alternatively, email your IP here[daya.shankar58@gmail.com] and I will add it. Database will live for another One month. 
 * Set Application.SmartCharging.Service as Startup Project
 * Run the project and it should launch a browser with swagger enabled RESTful APIs of Group, ServiceStation & Connector
 
 * default swagger URL-  https://localhost:5001/swagger/index.html
 
+* TODO are some open areas where improvements can be done later.

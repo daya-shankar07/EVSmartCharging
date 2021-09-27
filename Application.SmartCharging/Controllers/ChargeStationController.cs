@@ -41,7 +41,7 @@ namespace Application.SmartCharging.Service.Controllers
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound, Type = typeof(string))]
         [ProducesResponseType(StatusCodes.Status400BadRequest, Type = typeof(string))]
-        public async Task<CstationResponse> GetGroup(string id)
+        public async Task<CstationResponse> GetChargeStation(string id)
         {
             var result = await _cStationService.GetStationAsync(id);
             return result;
@@ -54,7 +54,7 @@ namespace Application.SmartCharging.Service.Controllers
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound, Type = typeof(string))]
         [ProducesResponseType(StatusCodes.Status400BadRequest, Type = typeof(string))]
-        public async Task<CstationResponse> DeleteGroup(string id)
+        public async Task<CstationResponse> DeleteChargeStation(string id)
         {
             var result = await _cStationService.DeleteAsync(id);
             return result;
@@ -67,7 +67,7 @@ namespace Application.SmartCharging.Service.Controllers
         [ProducesResponseType(StatusCodes.Status201Created, Type = typeof(CstationResponse))]
         [ProducesResponseType(StatusCodes.Status404NotFound, Type = typeof(string))]
         [ProducesResponseType(StatusCodes.Status400BadRequest, Type = typeof(string))]
-        public async Task<CstationResponse> CreateGroup([FromBody] CStationRequest item, string groupId)
+        public async Task<CstationResponse> CreateChargeStation([FromBody]CStationRequest item, string groupId)
         {
             var result = await _cStationService.PostAsync(item, groupId);
             return result;
@@ -80,7 +80,7 @@ namespace Application.SmartCharging.Service.Controllers
         [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(CstationResponse))]
         [ProducesResponseType(StatusCodes.Status404NotFound, Type = typeof(string))]
         [ProducesResponseType(StatusCodes.Status400BadRequest, Type = typeof(string))]
-        public async Task<CstationResponse> UpdateGroup([FromBody]CStationRequest item, string groupId)
+        public async Task<CstationResponse> UpdatChargeStation([FromBody]CStationRequest item, string groupId)
         {
             var result = await _cStationService.UpdateAsync(item, groupId);
             return result;

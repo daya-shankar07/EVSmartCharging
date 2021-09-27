@@ -66,8 +66,7 @@ namespace Application.SmartCharging.DL
                 await
                 using (var context = new evsolutionContext())
                 {
-                    station = context.Cstations.Where(x => x.StationId.Equals(id)).Include(x => x.Connectors).FirstOrDefault();
-
+                    station = context.Cstations.Where(x => x.StationId.ToString().Equals(id)).Include(x=>x.Connectors).FirstOrDefault();
                 }
             }
             catch (Exception ex)

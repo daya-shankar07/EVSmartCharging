@@ -1,6 +1,7 @@
 ﻿using Application.SmartCharging.Common;
 using Application.SmartCharging.EFCore.Models;
 using Application.SmartCharging.Models;
+using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -45,7 +46,7 @@ namespace Application.SmartCharging.DL
                 await
                 using (var context = new evsolutionContext())
                 {
-                    connectorsList = context.Connectors.ToList();
+                    connectorsList = context.Connectors.Include(y => y.Cstation).ToList();
                 }
             }
             catch (Exception ex)
@@ -64,7 +65,8 @@ namespace Application.SmartCharging.DL
                 await
                 using (var context = new evsolutionContext())
                 {
-                    connector = (Connector)context.Connectors.Where(x => x.Id.ToString() == connectorId && x.CstationId.ToString().Equals(stationId));
+                    connector = context.Connectors.Where(x => x.Id.ToString() == connectorId && x.CstationId.ToString().Equals(stationId)).First();
+
 
                 }
             }

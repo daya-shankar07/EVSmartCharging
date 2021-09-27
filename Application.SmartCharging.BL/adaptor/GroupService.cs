@@ -20,7 +20,7 @@ namespace Application.SmartCharging.BL
         private readonly IGroupRepository _groupRepository;
         private readonly IConfiguration _configuration;
         private readonly ITelemetryAdaptor _telemetryAdaptor;
-        private readonly IMapper _mapper;  
+        private readonly IMapper _mapper;
 
         public GroupService(IConfiguration configuration, ITelemetryAdaptor telemetryAdaptor , IMapper mapper ,IGroupRepository groupRepository)
         {

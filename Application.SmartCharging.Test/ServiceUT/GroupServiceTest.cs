@@ -21,44 +21,49 @@ namespace Application.SmartCharging.Test
     {
         private Mock<IConfiguration> configuration;
         private Mock<ITelemetryAdaptor> telemetryAdaptor;
-        private Mock<IMapper> mapper;
+        private IMapper mapper;
         private GroupService groupService;
         private Mock<IGroupRepository> groupRepository;
-       public Guid gIdGet = Guid.NewGuid();
+        public Guid sId = Guid.Parse("a40a5c72-d741-418d-aba3-7c7addd31bb3");
+        public Guid gId = Guid.Parse("98f84d22-6236-4b65-b90b-a8c0c3df01b1");
+        private GroupRequest gpRequestPost;
+        private GroupRequest gpRequestUpdate;
+        private Group gpReponsePost;
+        private Group gpResponseUpdate;
 
 
-        #region Data Preparation
-
-
-        List<Cstation> cstation = new List<Cstation>() { new Cstation() {StationId=Guid.NewGuid(), GroupId = Guid.NewGuid(), Name="CStation1" } };
-      
-        IEnumerable<Group> groupList = new List<Group> { new Group() { Id = Guid.NewGuid(), Capacity = 1000, Name = "Test1", Cstations = new List<Cstation>() { new Cstation() { StationId = Guid.NewGuid(), GroupId = Guid.NewGuid(), Name = "CStation1" } } } };
-
-        Group group = new() { Id = Guid.NewGuid(), Capacity = 1000, Name = "Test2", Cstations = new List<Cstation>() { new Cstation() { StationId = Guid.NewGuid(), GroupId = Guid.NewGuid(), Name = "CStation1" } } };
-
-        GroupRequest gpRPost = new GroupRequest() { Capacity = 1000, Name = "Group2" };
-        GroupRequest gpRUpdate = new GroupRequest() { Capacity = 9000, Name = "Group3" };
-
-        Group gpPost = new Group() { Id = Guid.NewGuid(), Capacity = 1000, Name = "Group2" };
-        Group gpUpdate = new Group() { Id = Guid.NewGuid(), Capacity = 9000, Name = "Group3" };
-
-        #endregion
 
         [TestInitialize]
         public void BeforeEach()
         {
+            #region Data Preparation
+            List<Cstation> cstationList = new List<Cstation>() { new Cstation() { StationId = sId, GroupId = gId, Name = "CStation1" } };
+            List<CStationRequest> cstationReqList = new List<CStationRequest>() { new CStationRequest() {  Name="Station1",Connectors=null } };
+
+            IEnumerable<Group> groupList = new List<Group> { new Group() { Id = gId, Capacity = 1000, Name = "Test1", Cstations = new List<Cstation>() { new Cstation() { StationId = sId, Name = "CStation1" } } } };
+            Group group = new() { Id = gId, Capacity = 1000, Name = "Test2", Cstations = new List<Cstation>() { new Cstation() { StationId = sId, Name = "CStation1" } } };
+            gpRequestPost = new GroupRequest() { Capacity = 1000, Name = "Group2",CStations= cstationReqList };
+            gpRequestUpdate = new GroupRequest() { Capacity = 9000, Name = "Group3" };
+            gpReponsePost = new Group() { Id = gId, Capacity = 1000, Name = "Group2" ,Cstations= cstationList };
+            gpResponseUpdate = new Group() { Id = gId, Capacity = 9000, Name = "Group3" };
+            #endregion
+
+            var mapperConfig = new MapperConfiguration(mc =>
+            {
+                mc.AddProfile(new DomainProfile());
+            });
+            mapper = mapperConfig.CreateMapper();
             configuration = new Mock<IConfiguration>();
             telemetryAdaptor = new Mock<ITelemetryAdaptor>();
-            mapper = new Mock<IMapper>();
-            groupRepository = new Mock<IGroupRepository>(); 
-            groupService = new GroupService(configuration.Object,telemetryAdaptor.Object,mapper.Object,groupRepository.Object);
+            groupRepository = new Mock<IGroupRepository>();
+            groupService = new GroupService(configuration.Object, telemetryAdaptor.Object, mapper, groupRepository.Object);
 
 
             // mock calls to DB
             groupRepository.Setup(x => x.GetAllAsync()).Returns(Task.FromResult(groupList));
             groupRepository.Setup(x => x.GetGroupAsync(It.IsAny<string>())).Returns(Task.FromResult(group));
-            groupRepository.Setup(x => x.PostAsync(gpPost)).Returns(Task.FromResult(gpPost));
-            groupRepository.Setup(x => x.UpdateAsync(gpUpdate)).Returns(Task.FromResult(gpUpdate));
+            groupRepository.Setup(x => x.PostAsync(It.IsAny<Group>())).Returns(Task.FromResult(gpReponsePost));
+            groupRepository.Setup(x => x.UpdateAsync(It.IsAny<Group>())).Returns(Task.FromResult(gpResponseUpdate));
         }
 
 
@@ -76,31 +81,32 @@ namespace Application.SmartCharging.Test
         {
 
             // Act
-            var response = groupService.GetGroupAsync(gIdGet.ToString()).Result;
+            var response = groupService.GetGroupAsync(gId.ToString()).Result;
             // Assert
             Assert.IsNotNull(response);
+            Assert.IsTrue(response.Capacity == 1000); // 
         }
 
         [TestMethod]
         public void PostAsyncTest()
         {
             // Act
-            var response = groupService.PostGroupAsync(gpRPost).Result;
+            var response = groupService.PostGroupAsync(gpRequestPost).Result;
             // Assert
             Assert.IsNotNull(response);
-            Assert.IsTrue(response.Name==gpPost.Name);
-            Assert.IsTrue(response.Capacity == gpPost.Capacity);
+            Assert.IsTrue(response.Name == gpRequestPost.Name);
+            Assert.IsTrue(response.Capacity == gpRequestPost.Capacity);
         }
 
         [TestMethod]
         public void UpdateAsyncTest()
         {
             // Act
-            var response = groupService.UpdateGroupAsync(gpRUpdate).Result;
+            var response = groupService.UpdateGroupAsync(gpRequestUpdate).Result;
             // Assert
             Assert.IsNotNull(response);
-            Assert.IsTrue(response.Name == gpRUpdate.Name);
-            Assert.IsTrue(response.Capacity == gpRUpdate.Capacity);
+            Assert.IsTrue(response.Name == gpRequestUpdate.Name);
+            Assert.IsTrue(response.Capacity == gpRequestUpdate.Capacity);
         }
     }
 }
