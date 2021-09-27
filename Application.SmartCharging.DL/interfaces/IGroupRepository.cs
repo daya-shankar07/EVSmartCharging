@@ -14,6 +14,6 @@ namespace Application.SmartCharging.DL
         public Task<Group> PostAsync(Group item);
         public Task<Group> UpdateAsync(Group item);
         public Task<Group> DeleteAsync(string id);
-        public Task<Cstation> GetGroupDataWithConnectorAsync(string groupId);
+        public Task<List<Connector>> GetGroupDataWithConnectorAsync(string groupId);
     }
 }

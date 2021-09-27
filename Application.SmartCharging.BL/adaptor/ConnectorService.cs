@@ -1,4 +1,5 @@
-﻿using Application.SmartCharging.Common;
+﻿using Application.SmartCharging.BL.Validations;
+using Application.SmartCharging.Common;
 using Application.SmartCharging.DL;
 using Application.SmartCharging.EFCore.Models;
 using Application.SmartCharging.Models;
@@ -7,6 +8,9 @@ using Microsoft.Extensions.Configuration;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net;
+using System.Net.Http;
+using System.Net.Http.Formatting;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -18,12 +22,14 @@ namespace Application.SmartCharging.BL
         private readonly ITelemetryAdaptor _telemetryAdaptor;
         private readonly IConnectorRepository _connectorRepository;
         private readonly IMapper _mapper;
+        private readonly CommonValidations _commonValidation;
         public ConnectorService(IConfiguration configuration, ITelemetryAdaptor telemetryAdaptor, IConnectorRepository connectorRepository, IMapper mapper)
         {
             _configuration = configuration;
             _telemetryAdaptor = telemetryAdaptor;
             _connectorRepository = connectorRepository;
             _mapper = mapper;
+            _commonValidation = new CommonValidations(telemetryAdaptor);
 
         }
         public async Task<ConnectorResponse> DeleteConnectorAsync(string connectorId, string stationId)
@@ -38,6 +44,7 @@ namespace Application.SmartCharging.BL
             catch (Exception ex)
             {
                 _telemetryAdaptor.TrackException(ex);
+                throw;
             }
             _telemetryAdaptor.TrackEvent(String.Format("DeleteConnectorAsync Completed for StationId {0} ConnectorId {1} ", stationId, connectorId));
 
@@ -57,6 +64,7 @@ namespace Application.SmartCharging.BL
             catch (Exception ex)
             {
                 _telemetryAdaptor.TrackException(ex);
+                throw;
             }
             _telemetryAdaptor.TrackEvent(String.Format("GetAllConnectorAsync Completed"));
             return response;
@@ -75,6 +83,7 @@ namespace Application.SmartCharging.BL
             {
 
                 _telemetryAdaptor.TrackException(ex);
+                throw;
             }
             _telemetryAdaptor.TrackEvent(String.Format("GetConnectorAsync Completed"));
             return response;
@@ -94,8 +103,9 @@ namespace Application.SmartCharging.BL
             catch (Exception ex)
             {
                 _telemetryAdaptor.TrackException(ex);
+                throw;
             }
-            _telemetryAdaptor.TrackEvent(String.Format("PostConnectorAsync Completed"));
+            _telemetryAdaptor.TrackEvent(String.Format("PostConnectorAsync Completed for StationId & ConnectorId {0} -- {1}" + stationId,item.Id));
             return response;
 
         }
@@ -106,18 +116,27 @@ namespace Application.SmartCharging.BL
             _telemetryAdaptor.TrackEvent(String.Format("UpdateConnectorAsync Started"));
             try
             {
-                var itemToUpdate = _mapper.Map<Connector>(item);
-                itemToUpdate.CstationId = Guid.Parse(stationId);
-                var result = await _connectorRepository.UpdateAsync(itemToUpdate);
-                response = _mapper.Map<ConnectorResponse>(result);
+                // TODO- Handle validations properly by using Filters and Error Middleware
+                if(item.MaxCurrent >0)
+                {
+                    var groupMaxCurrent = await _commonValidation.GetGroupMaxCurrentFromConnector(stationId);
 
+                    
+                     if (groupMaxCurrent <= groupMaxCurrent + item.MaxCurrent) return response;
+                   
+                    var itemToUpdate = _mapper.Map<Connector>(item);
+                    itemToUpdate.CstationId = Guid.Parse(stationId);
+                    var result = await _connectorRepository.UpdateAsync(itemToUpdate);
+                    response = _mapper.Map<ConnectorResponse>(result);
+                    _telemetryAdaptor.TrackEvent(String.Format("UpdateConnectorAsync Exited for StationId & ConnectorId {0} -- {1}", stationId, item.Id));
+                }
             }
             catch (Exception ex)
             {
-
+                _telemetryAdaptor.TrackException(ex);
                 throw;
             }
-            _telemetryAdaptor.TrackEvent(String.Format("UpdateConnectorAsync Exited"));
+           
             return response;
         }
     }

@@ -39,6 +39,7 @@ namespace Application.SmartCharging.BL
             catch (Exception ex)
             {
                 _telemetryAdaptor.TrackException(ex);
+                throw;
             }
             _telemetryAdaptor.TrackEvent(String.Format("DeleteAsync Completed for stationId {0}", stationId));
             return response;
@@ -56,6 +57,7 @@ namespace Application.SmartCharging.BL
             catch (Exception ex)
             {
                 _telemetryAdaptor.TrackException(ex);
+                throw;
             }
             _telemetryAdaptor.TrackEvent(String.Format("GetAllAsync Completed"));
             return response;
@@ -73,6 +75,7 @@ namespace Application.SmartCharging.BL
             catch (Exception ex)
             {
                 _telemetryAdaptor.TrackException(ex);
+                throw;
             }
             _telemetryAdaptor.TrackEvent(String.Format("GetStationAsync Completed for Station {0}", id));
             return response;
@@ -90,12 +93,13 @@ namespace Application.SmartCharging.BL
                 itemToPost.StationId = Guid.NewGuid();
                 var result = await _cStationRepository.PostAsync(itemToPost);
                 response = _mapper.Map<CstationResponse>(result);
+                _telemetryAdaptor.TrackEvent(String.Format("PostAsync Completed for StationId {0}", itemToPost.StationId.ToString()));
             }
             catch (Exception ex)
             {
                 _telemetryAdaptor.TrackException(ex);
+                throw;
             }
-            _telemetryAdaptor.TrackEvent(String.Format("PostAsync Completed"));
             return response;
         }
 
@@ -114,6 +118,7 @@ namespace Application.SmartCharging.BL
             catch (Exception ex)
             {
                 _telemetryAdaptor.TrackException(ex);
+                throw;
             }
             _telemetryAdaptor.TrackEvent(String.Format("UpdateAsync Completed for group {0} ", groupId));
             return response;

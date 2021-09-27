@@ -20,7 +20,6 @@ namespace Application.SmartCharging.BL
         private readonly IConfiguration _configuration;
         private readonly ITelemetryAdaptor _telemetryAdaptor;
         private readonly IMapper _mapper;
-        private readonly CommonValidations _commonValidations;
 
         public GroupService(IConfiguration configuration, ITelemetryAdaptor telemetryAdaptor , IMapper mapper ,IGroupRepository groupRepository)
         {
@@ -28,7 +27,6 @@ namespace Application.SmartCharging.BL
             _configuration = configuration;
             _telemetryAdaptor = telemetryAdaptor;
             _mapper = mapper;
-            _commonValidations = new CommonValidations(groupRepository, telemetryAdaptor);
         }
 
         public async Task<GroupResponse> DeleteGroupAsync(string id)
@@ -44,6 +42,7 @@ namespace Application.SmartCharging.BL
             catch (Exception ex)
             {
                 _telemetryAdaptor.TrackException(ex);
+                throw;
             }
             _telemetryAdaptor.TrackEvent(String.Format("DeleteGroupAsync Completed for GroupId {0}", id));
             return response;
@@ -61,6 +60,7 @@ namespace Application.SmartCharging.BL
             catch (Exception ex)
             {
                 _telemetryAdaptor.TrackException(ex);
+                throw;
             }
             _telemetryAdaptor.TrackEvent(String.Format("GetAllGroupAsync Completed for GroupId"));
             return response;
@@ -77,8 +77,9 @@ namespace Application.SmartCharging.BL
             }
             catch (Exception ex)
             {
-
                 _telemetryAdaptor.TrackException(ex);
+                throw;
+               
             }
             _telemetryAdaptor.TrackEvent(String.Format("GetGroupAsync Completed for GroupId {0}", id));
             return response;
@@ -94,12 +95,14 @@ namespace Application.SmartCharging.BL
                 itemToPost.Id= Guid.NewGuid();
                 var result = await _groupRepository.PostAsync(itemToPost);
                 response = _mapper.Map<GroupResponse>(result);
+                _telemetryAdaptor.TrackEvent(String.Format("PostGroupAsync Completed with Id {0}", itemToPost.Id.ToString()));
             }
             catch (Exception ex)
             {
                 _telemetryAdaptor.TrackException(ex);
+                throw;
             }
-            _telemetryAdaptor.TrackEvent(String.Format("PostGroupAsync Completed"));
+           
             return response;
         }
 
@@ -116,7 +119,9 @@ namespace Application.SmartCharging.BL
             }
             catch (Exception ex)
             {
+               
                 _telemetryAdaptor.TrackException(ex);
+                throw;
             }
             _telemetryAdaptor.TrackEvent(String.Format("UpdateGroupAsync Completed for groupId {0}", groupId));
             return response;

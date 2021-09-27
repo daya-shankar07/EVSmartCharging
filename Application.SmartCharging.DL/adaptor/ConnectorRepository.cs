@@ -17,7 +17,6 @@ namespace Application.SmartCharging.DL
         {
             _telemetry = telemetryAdaptor;
         }
-
         public async Task<Connector> DeleteAsync(string connectorId, string stationId)
         {
             Connector connector = new Connector();
@@ -65,9 +64,7 @@ namespace Application.SmartCharging.DL
                 await
                 using (var context = new evsolutionContext())
                 {
-                    connector = context.Connectors.Where(x => x.Id.ToString() == connectorId && x.CstationId.ToString().Equals(stationId)).First();
-
-
+                    connector = context.Connectors.Where(x => x.Id.ToString() == connectorId && x.CstationId.ToString().Equals(stationId)).FirstOrDefault();
                 }
             }
             catch (Exception ex)
@@ -81,7 +78,6 @@ namespace Application.SmartCharging.DL
         public async Task<Connector> PostAsync(Connector item)
         {
             Connector cs = new Connector();
-
             try
             {
                 await
@@ -95,7 +91,6 @@ namespace Application.SmartCharging.DL
                         transaction.Commit();
                     }
                 }
-
             }
             catch (Exception ex)
             {
@@ -123,7 +118,6 @@ namespace Application.SmartCharging.DL
                             cs = res;
                             context.SaveChanges();
                         }
-                       
                         transaction.Commit();
                     }
                 }
@@ -134,7 +128,6 @@ namespace Application.SmartCharging.DL
                 _telemetry.TrackException(ex);
                 throw;
             }
-
             return cs;
         }
     }

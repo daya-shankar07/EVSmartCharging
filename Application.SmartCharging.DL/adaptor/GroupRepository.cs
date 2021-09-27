@@ -142,10 +142,10 @@ namespace Application.SmartCharging.DL
             return gp;
         }
 
-        public async Task<Cstation> GetGroupDataWithConnectorAsync(string groupId)
+        public async Task<List<Connector>> GetGroupDataWithConnectorAsync(string groupId)
         {
-            Cstation cs = new Cstation();
-            Group   group = new Group();
+            List<Connector> connectorList = new List<Connector>();
+            Group group = new Group();
             try
             {
                 await
@@ -155,8 +155,9 @@ namespace Application.SmartCharging.DL
 
                     foreach (var station in group.Cstations)
                     {
-                        cs = context.Cstations.Where(x => x.StationId.ToString().Equals(station.StationId)).Include(x => x.Connectors).FirstOrDefault();
-
+                        Cstation cs1 = new Cstation();
+                        cs1 = context.Cstations.Where(x => x.StationId.Equals(station.StationId)).Include(x => x.Connectors).FirstOrDefault();
+                        connectorList.AddRange(cs1.Connectors.ToList());
                     }
 
                 }
@@ -166,7 +167,7 @@ namespace Application.SmartCharging.DL
                 _telemetry.TrackException(ex);
                 throw;
             }
-            return cs;
+            return connectorList;
         }
     }
 }

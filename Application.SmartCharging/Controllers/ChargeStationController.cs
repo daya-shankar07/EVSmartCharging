@@ -5,7 +5,6 @@ using Microsoft.AspNetCore.Mvc;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
-using System.Linq;
 using System.Threading.Tasks;
 
 namespace Application.SmartCharging.Service.Controllers
@@ -28,62 +27,89 @@ namespace Application.SmartCharging.Service.Controllers
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound, Type = typeof(string))]
         [ProducesResponseType(StatusCodes.Status400BadRequest, Type = typeof(string))]
-        public async Task<IEnumerable<CstationResponse>> GetAllStations()
+        public async Task<IActionResult> GetAllStations()
         {
-            var result = await _cStationService.GetAllAsync();
-            return result;
+            try
+            {
+                var result = await _cStationService.GetAllAsync();
+                return Ok(result);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, ex.Message);
+            }
         }
 
 
         [HttpGet("/station/{id}")]
         [ActionName("getStation")]
         [Produces("application/json", Type = typeof(CstationResponse))]
-        [ProducesResponseType(StatusCodes.Status200OK)]
-        [ProducesResponseType(StatusCodes.Status404NotFound, Type = typeof(string))]
-        [ProducesResponseType(StatusCodes.Status400BadRequest, Type = typeof(string))]
-        public async Task<CstationResponse> GetChargeStation(string id)
+        public async Task<IActionResult> GetChargeStation(string id)
         {
-            var result = await _cStationService.GetStationAsync(id);
-            return result;
+            if (id == null) return BadRequest(String.Format("Please check input {0}", id));
+            try
+            {
+                var result = await _cStationService.GetStationAsync(id);
+                return Ok(result);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, ex.Message);
+            }
         }
 
 
         [HttpDelete("/station/{id}")]
         [ActionName("/deleteStation")]
         [Produces("application/json", Type = typeof(CstationResponse))]
-        [ProducesResponseType(StatusCodes.Status200OK)]
-        [ProducesResponseType(StatusCodes.Status404NotFound, Type = typeof(string))]
-        [ProducesResponseType(StatusCodes.Status400BadRequest, Type = typeof(string))]
-        public async Task<CstationResponse> DeleteChargeStation(string id)
+        public async Task<IActionResult> DeleteChargeStation(string id)
         {
-            var result = await _cStationService.DeleteAsync(id);
-            return result;
+            if (id == null) return BadRequest(String.Format("Please check input {0}", id));
+            try
+            {
+                var result = await _cStationService.DeleteAsync(id);
+                return Ok(result);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, ex.Message);
+            }
         }
 
 
         [HttpPost("/station/{groupId}")]
         [ActionName("/createGroup")]
         [Produces("application/json", Type = typeof(CstationResponse))]
-        [ProducesResponseType(StatusCodes.Status201Created, Type = typeof(CstationResponse))]
-        [ProducesResponseType(StatusCodes.Status404NotFound, Type = typeof(string))]
-        [ProducesResponseType(StatusCodes.Status400BadRequest, Type = typeof(string))]
-        public async Task<CstationResponse> CreateChargeStation([FromBody]CStationRequest item, string groupId)
+        public async Task<IActionResult> CreateChargeStation([FromBody]CStationRequest item, string groupId)
         {
-            var result = await _cStationService.PostAsync(item, groupId);
-            return result;
+            if (item == null || groupId == null) return BadRequest(String.Format("Please check input {0} & {1}", item, groupId));
+            try
+            {
+                var result = await _cStationService.PostAsync(item, groupId);
+                return Created($"/{result.StationId}", result);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, ex.Message);
+            }
         }
 
 
         [HttpPut("/station/{id}")]
         [ActionName("/updateStation")]
         [Produces("application/json", Type = typeof(CstationResponse))]
-        [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(CstationResponse))]
-        [ProducesResponseType(StatusCodes.Status404NotFound, Type = typeof(string))]
-        [ProducesResponseType(StatusCodes.Status400BadRequest, Type = typeof(string))]
-        public async Task<CstationResponse> UpdatChargeStation([FromBody]CStationRequest item, string groupId)
+        public async Task<IActionResult> UpdatChargeStation([FromBody]CStationRequest item, string groupId)
         {
-            var result = await _cStationService.UpdateAsync(item, groupId);
-            return result;
+            if (item == null || groupId == null) return BadRequest(String.Format("Please check input {0} & {1}", item, groupId));
+            try
+            {
+                var result = await _cStationService.UpdateAsync(item, groupId);
+                return Ok(result);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, ex.Message);
+            }
         }
     }
 }

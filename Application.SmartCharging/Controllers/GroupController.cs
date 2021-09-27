@@ -2,6 +2,7 @@
 using Application.SmartCharging.Models;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using System;
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.Threading.Tasks;
@@ -24,68 +25,89 @@ namespace Application.SmartCharging.Controllers
         [HttpGet("/group")]
         [ActionName("/getGroups")]
         [Produces("application/json", Type = typeof(IEnumerable<GroupResponse>))]
-        [ProducesResponseType(StatusCodes.Status200OK)]
-        [ProducesResponseType(StatusCodes.Status404NotFound, Type = typeof(string))]
-        [ProducesResponseType(StatusCodes.Status400BadRequest, Type = typeof(string))]
-        public async Task<IEnumerable<GroupResponse>> GetAllGroups()
+        public async Task<IActionResult> GetAllGroups()
         {
-            var result = await _groupService.GetAllGroupAsync();
-            return result;
+            try
+            {
+                var result = await _groupService.GetAllGroupAsync();
+                return Ok(result);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, ex.Message);
+            }
         }
 
       
         [HttpGet("/group/{id}")]
         [ActionName("getGroup")]
         [Produces("application/json", Type = typeof(GroupResponse))]
-        [ProducesResponseType(StatusCodes.Status200OK)]
-        [ProducesResponseType(StatusCodes.Status404NotFound, Type = typeof(string))]
-        [ProducesResponseType(StatusCodes.Status400BadRequest, Type = typeof(string))]
-        public async Task<GroupResponse> GetGroup(string id)
+        public async Task<IActionResult> GetGroup(string id)
         {
-            var result = await _groupService.GetGroupAsync(id);
-            return result;
+            if (id == null) return BadRequest(String.Format("Please check input {0}", id));
+            try
+            {
+                var result = await _groupService.GetGroupAsync(id);
+                return Ok(result);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, ex.Message);
+            }
         }
 
         
         [HttpDelete("/group/{id}")]
         [ActionName("/deleteGroup")]
         [Produces("application/json", Type = typeof(GroupResponse))]
-        [ProducesResponseType(StatusCodes.Status200OK)]
-        [ProducesResponseType(StatusCodes.Status404NotFound, Type = typeof(string))]
-        [ProducesResponseType(StatusCodes.Status400BadRequest, Type = typeof(string))]
-        public async Task<GroupResponse> DeleteGroup(string id)
+        public async Task<IActionResult> DeleteGroup(string id)
         {
-            var result = await _groupService.DeleteGroupAsync(id);
-            return result;
+            if (id == null) return BadRequest(String.Format("Please check input {0}", id));
+            try
+            {
+                var result = await _groupService.DeleteGroupAsync(id);
+                return Ok(result);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, ex.Message);
+            }
         }
 
        
         [HttpPost("/group")]
         [ActionName("/createGroup")]
         [Produces("application/json", Type = typeof(GroupResponse))]
-        [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(GroupResponse))]
-        [ProducesResponseType(StatusCodes.Status201Created, Type = typeof(GroupResponse))]
-        [ProducesResponseType(StatusCodes.Status404NotFound, Type = typeof(string))]
-        [ProducesResponseType(StatusCodes.Status400BadRequest, Type = typeof(string))]
-        public async Task<GroupResponse> CreateGroup([FromBody]GroupRequest groupItem)
+        public async Task<IActionResult> CreateGroup([FromBody]GroupRequest groupItem)
         {
-            
-            var result = await _groupService.PostGroupAsync(groupItem);
-            return result;
+            if (groupItem == null) return BadRequest(String.Format("Please check input {0}", groupItem));
+            try
+            {
+                var result = await _groupService.PostGroupAsync(groupItem);
+                return Created($"/{result.Id}", result);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, ex.Message);
+            }
         }
 
       
         [HttpPut("/group/{groupId}")]
         [ActionName("/updateGroup")]
         [Produces("application/json", Type = typeof(GroupResponse))]
-        [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(GroupResponse))]
-        [ProducesResponseType(StatusCodes.Status404NotFound, Type = typeof(string))]
-        [ProducesResponseType(StatusCodes.Status400BadRequest, Type = typeof(string))]
-        public async Task<GroupResponse> UpdateGroup([FromBody]GroupRequest item, string groupId)
+        public async Task<IActionResult> UpdateGroup([FromBody]GroupRequest item, string groupId)
         {
-            var result = await _groupService.UpdateGroupAsync(item, groupId);
-            return result;
+            if (item == null || groupId == null) return BadRequest(String.Format("Please check input {0} & {1}", item, groupId));
+            try
+            {
+                var result = await _groupService.UpdateGroupAsync(item, groupId);
+                return Ok(result);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500,ex.Message);
+            }
         }
-
     }
 }
