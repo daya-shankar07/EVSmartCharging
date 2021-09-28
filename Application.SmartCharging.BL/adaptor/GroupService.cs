@@ -20,6 +20,7 @@ namespace Application.SmartCharging.BL
         private readonly IConfiguration _configuration;
         private readonly ITelemetryAdaptor _telemetryAdaptor;
         private readonly IMapper _mapper;
+        private readonly CommonValidations _commonValidation;
 
         public GroupService(IConfiguration configuration, ITelemetryAdaptor telemetryAdaptor , IMapper mapper ,IGroupRepository groupRepository)
         {
@@ -27,6 +28,7 @@ namespace Application.SmartCharging.BL
             _configuration = configuration;
             _telemetryAdaptor = telemetryAdaptor;
             _mapper = mapper;
+            _commonValidation = new CommonValidations(telemetryAdaptor);
         }
 
         public async Task<GroupResponse> DeleteGroupAsync(string id)
@@ -35,7 +37,6 @@ namespace Application.SmartCharging.BL
             _telemetryAdaptor.TrackEvent(String.Format("DeleteGroupAsync Started for GroupId {0}", id));
             try
             {
-                if (id == null) return null;
                 var result = await _groupRepository.DeleteAsync(id);
                 response = _mapper.Map<GroupResponse>(result);
             }
@@ -112,6 +113,10 @@ namespace Application.SmartCharging.BL
             _telemetryAdaptor.TrackEvent(String.Format("UpdateGroupAsync Started for groupId {0}" , groupId));
             try
             {
+                // business validation
+                var groupConnectorsMaxCurrent = await _commonValidation.GetGroupMaxCurrentFromGroup(groupId);
+                if (item.Capacity <= groupConnectorsMaxCurrent) return response;
+
                 var itemToUpdate = _mapper.Map<Group>(item);
                 itemToUpdate.Id = Guid.Parse(groupId);
                 var result = await _groupRepository.UpdateAsync(itemToUpdate);
@@ -119,7 +124,6 @@ namespace Application.SmartCharging.BL
             }
             catch (Exception ex)
             {
-               
                 _telemetryAdaptor.TrackException(ex);
                 throw;
             }

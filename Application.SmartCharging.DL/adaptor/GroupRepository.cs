@@ -126,6 +126,7 @@ namespace Application.SmartCharging.DL
                             res.Capacity = item.Capacity !=0 ? item.Capacity : res.Capacity;
                             res.Cstations = cStationList;
                             context.Update(res);
+                            context.SaveChanges();
                             gp = res;
                         }
                         transaction.Commit();

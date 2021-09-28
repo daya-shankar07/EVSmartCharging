@@ -124,7 +124,7 @@ namespace Application.SmartCharging.DL
                         res.Connectors = connectorsList;
                         context.Update(res);
                         context.SaveChanges();
-                        cs = await GetStationAsync(res.StationId.ToString());
+                        cs = res;
                         transaction.Commit();
                     }
                 }

@@ -23,6 +23,7 @@ namespace Application.SmartCharging.BL
         private readonly IConnectorRepository _connectorRepository;
         private readonly IMapper _mapper;
         private readonly CommonValidations _commonValidation;
+       
         public ConnectorService(IConfiguration configuration, ITelemetryAdaptor telemetryAdaptor, IConnectorRepository connectorRepository, IMapper mapper)
         {
             _configuration = configuration;
@@ -38,6 +39,10 @@ namespace Application.SmartCharging.BL
             _telemetryAdaptor.TrackEvent(String.Format("DeleteConnectorAsync Started for StationId {0} ConnectorId {1} ", stationId, connectorId));
             try
             {
+                // business validation
+                var bs = await _commonValidation.GetGroupMaxCurrentFromConnector(connectorId, stationId);
+                if (bs.GroupCapacity <= bs.ConnectorTotalCapacity - bs.ConnectorCurrentCapacity) return response;
+
                 var result = await _connectorRepository.DeleteAsync(connectorId, stationId);
                 response = _mapper.Map<ConnectorResponse>(result);
             }
@@ -95,6 +100,10 @@ namespace Application.SmartCharging.BL
             _telemetryAdaptor.TrackEvent(String.Format("PostConnectorAsync Started"));
             try
             {
+                // business validation
+                var bs = await _commonValidation.GetGroupMaxCurrentFromConnector(item.Id.ToString(), stationId);
+                if (bs.GroupCapacity <= bs.ConnectorTotalCapacity + item.MaxCurrent - bs.ConnectorCurrentCapacity) return response;
+
                 var itemToPost = _mapper.Map<Connector>(item);
                 itemToPost.CstationId = Guid.Parse(stationId);
                 var result = await _connectorRepository.PostAsync(itemToPost);
@@ -105,6 +114,7 @@ namespace Application.SmartCharging.BL
                 _telemetryAdaptor.TrackException(ex);
                 throw;
             }
+            
             _telemetryAdaptor.TrackEvent(String.Format("PostConnectorAsync Completed for StationId & ConnectorId {0} -- {1}" + stationId,item.Id));
             return response;
 
@@ -116,13 +126,12 @@ namespace Application.SmartCharging.BL
             _telemetryAdaptor.TrackEvent(String.Format("UpdateConnectorAsync Started"));
             try
             {
-                // TODO- Handle validations properly by using Filters and Error Middleware
+                // TODO- Handle Return Message properly by using custom Filters and Error Middleware
                 if(item.MaxCurrent >0)
                 {
-                    var groupMaxCurrent = await _commonValidation.GetGroupMaxCurrentFromConnector(stationId);
-
-                    
-                     if (groupMaxCurrent <= groupMaxCurrent + item.MaxCurrent) return response;
+                    var bs = await _commonValidation.GetGroupMaxCurrentFromConnector( item.Id.ToString(), stationId);
+                    // business validation
+                     if (bs.GroupCapacity <= bs.ConnectorTotalCapacity + item.MaxCurrent - bs.ConnectorCurrentCapacity) return response;
                    
                     var itemToUpdate = _mapper.Map<Connector>(item);
                     itemToUpdate.CstationId = Guid.Parse(stationId);

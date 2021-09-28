@@ -7,17 +7,19 @@ namespace Application.SmartCharging.BL.Validations
 {
     public class CommonValidations 
     {
-        private readonly IGroupRepository _groupService ;
+        private readonly IGroupRepository _groupRepository ;
         private readonly ITelemetryAdaptor _telemetryAdaptor ;
         private readonly IConnectorRepository _connectorRepository;
         private readonly IChargeStationRepository _chargeStationRepository;
+        private readonly BusinessValidation _business ;
 
         public CommonValidations(ITelemetryAdaptor telemetryAdaptor)
         {
             _telemetryAdaptor = telemetryAdaptor;
-            _groupService = new GroupRepository(telemetryAdaptor);
+            _groupRepository = new GroupRepository(telemetryAdaptor);
             _connectorRepository = new ConnectorRepository(telemetryAdaptor);
             _chargeStationRepository = new ChargeStationRepository(telemetryAdaptor);
+            _business = new BusinessValidation();
         }
 
         public async Task<double> GetGroupMaxCurrentFromGroup(string groupId)
@@ -28,7 +30,7 @@ namespace Application.SmartCharging.BL.Validations
             {
                 if (string.IsNullOrEmpty(groupId)) return connectorMaxCurrentSum;
 
-                var connectorList = await _groupService.GetGroupDataWithConnectorAsync(groupId);
+                var connectorList = await _groupRepository.GetGroupDataWithConnectorAsync(groupId);
                 foreach (var conn in connectorList)
                 {
                     connectorMaxCurrentSum = (double)(connectorMaxCurrentSum + conn.MaxCurrent);
@@ -44,23 +46,48 @@ namespace Application.SmartCharging.BL.Validations
 
         }
 
-        public async Task<double> GetGroupMaxCurrentFromConnector(string stationId)
+        public async Task<BusinessValidation> GetGroupMaxCurrentFromConnector( string ConnectorId, string stationId)
         {
-            double groupMaxCurrent =0.0;
             try
             {
+                var connectorInfo = await _connectorRepository.GetConnectorAsync(ConnectorId, stationId);
                 var station= await _chargeStationRepository.GetStationAsync(stationId);
                 if(station != null)
                 {
-                    groupMaxCurrent = await GetGroupMaxCurrentFromGroup(station.GroupId.ToString());
+                     var g = await _groupRepository.GetGroupAsync(station.GroupId.ToString());
+                    _business.ConnectorTotalCapacity = await GetGroupMaxCurrentFromGroup(station.GroupId.ToString());
+                    _business.GroupCapacity = g != null ? (double)g.Capacity : 0.0;
+                    _business.ConnectorCurrentCapacity = connectorInfo !=null ? (double)connectorInfo.MaxCurrent : 0.00;
                 }
             }
             catch (Exception ex)
             {
-
+                _telemetryAdaptor.TrackException(ex);
                 throw;
             }
-            return groupMaxCurrent;
+            return _business;
         }
+
+
+        public async Task<double> GetGroupCurrent(string groupId)
+        {
+            double groupCurrent = 0.0;
+            var gData = await _groupRepository.GetGroupAsync(groupId);
+
+            if(gData != null)
+            {
+                groupCurrent = (double)gData.Capacity;
+            }
+
+            return groupCurrent;
+        }
+
+    }
+
+    public class BusinessValidation
+    {
+        public double GroupCapacity { get; set; }
+        public double ConnectorTotalCapacity {  get; set; }
+        public double ConnectorCurrentCapacity { get; set; }
     }
 }

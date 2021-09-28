@@ -1,4 +1,5 @@
-﻿using Application.SmartCharging.Common;
+﻿using Application.SmartCharging.BL.Validations;
+using Application.SmartCharging.Common;
 using Application.SmartCharging.DL;
 using Application.SmartCharging.EFCore.Models;
 using Application.SmartCharging.Models;
@@ -18,6 +19,7 @@ namespace Application.SmartCharging.BL
         private readonly ITelemetryAdaptor _telemetryAdaptor;
         private readonly IChargeStationRepository _cStationRepository;
         private readonly IMapper _mapper;
+        private readonly CommonValidations _commonValidation;
 
         public ChargeStationService(IConfiguration configuration, ITelemetryAdaptor telemetryAdaptor, IChargeStationRepository cStationRepository, IMapper mapper)
         {
@@ -25,7 +27,7 @@ namespace Application.SmartCharging.BL
             _telemetryAdaptor = telemetryAdaptor;
             _cStationRepository = cStationRepository;
             _mapper= mapper;
-
+            _commonValidation = new CommonValidations(telemetryAdaptor);
         }
         public async Task<CstationResponse> DeleteAsync(string stationId)
         {
@@ -85,9 +87,15 @@ namespace Application.SmartCharging.BL
         {
             _telemetryAdaptor.TrackEvent(String.Format("PostAsync Started"));
             CstationResponse response = new();
+            double totalGroupConnectorsNewCurrent = 0.0;
             try
             {
-                if (groupId == null) return response;
+                // business validation
+                var groupConnectorsRunningSum = await _commonValidation.GetGroupMaxCurrentFromGroup(groupId);
+                var groupCurrentCapacity = await _commonValidation.GetGroupCurrent(groupId);
+                totalGroupConnectorsNewCurrent = groupConnectorsRunningSum + item.Connectors.Count>0 ? item.Connectors.Sum(x => x.MaxCurrent) : 0;
+                if (groupCurrentCapacity <= totalGroupConnectorsNewCurrent) return response;
+
                 var itemToPost = _mapper.Map<Cstation>(item);
                 itemToPost.GroupId = Guid.Parse(groupId);
                 itemToPost.StationId = Guid.NewGuid();
@@ -109,7 +117,6 @@ namespace Application.SmartCharging.BL
             _telemetryAdaptor.TrackEvent(String.Format("UpdateAsync Started for group {0} " , groupId));
             try
             {
-                if (groupId == null) return response;
                 var itemToUpdate = _mapper.Map<Cstation>(item);
                 itemToUpdate.GroupId = Guid.Parse(groupId);
                 var result = await _cStationRepository.UpdateAsync(itemToUpdate);
